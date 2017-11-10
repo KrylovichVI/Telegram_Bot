@@ -2,21 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="88f4ebcd-549d-4dbf-909c-dcd56fc0d214" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/resources/xls/Abonents.xls" afterPath="$PROJECT_DIR$/src/main/resources/xls/Abonents.xls" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/resources/xls/List.xls" afterPath="$PROJECT_DIR$/src/main/resources/xls/List.xls" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/resources/xls/ListBirthday.xls" afterPath="$PROJECT_DIR$/src/main/resources/xls/ListBirthday.xls" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/Telegram_Bot-1.0-jar-with-dependencies.jar" afterPath="$PROJECT_DIR$/target/Telegram_Bot-1.0-jar-with-dependencies.jar" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/Telegram_Bot-1.0.jar" afterPath="$PROJECT_DIR$/target/Telegram_Bot-1.0.jar" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/com/belintersat/bot/Bot/Bot.class" afterPath="$PROJECT_DIR$/target/classes/com/belintersat/bot/Bot/Bot.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/com/belintersat/bot/TimerTask/TimerTaskBot.class" afterPath="$PROJECT_DIR$/target/classes/com/belintersat/bot/TimerTask/TimerTaskBot.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/xls/Abonents.xls" afterPath="$PROJECT_DIR$/target/classes/xls/Abonents.xls" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/xls/List.xls" afterPath="$PROJECT_DIR$/target/classes/xls/List.xls" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/xls/ListBirthday.xls" afterPath="$PROJECT_DIR$/target/classes/xls/ListBirthday.xls" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pom.xml" afterPath="$PROJECT_DIR$/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/belintersat/bot/Bot/Bot.java" afterPath="$PROJECT_DIR$/src/main/java/com/belintersat/bot/Bot/Bot.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/belintersat/bot/TimerTask/TimerTaskBot.java" afterPath="$PROJECT_DIR$/src/main/java/com/belintersat/bot/TimerTask/TimerTaskBot.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" />
     </list>
     <ignored path="Telegram_Bot.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -44,7 +30,7 @@
         <entry file="file://$PROJECT_DIR$/pom.xml">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="357">
-              <caret line="42" column="38" selection-start-line="42" selection-start-column="38" selection-end-line="42" selection-end-column="38" />
+              <caret line="42" column="25" selection-start-line="42" selection-start-column="25" selection-end-line="42" selection-end-column="25" />
               <folding />
             </state>
           </provider>
@@ -934,12 +920,12 @@
       <workItem from="1508482384439" duration="4524000" />
       <workItem from="1510121643889" duration="1195000" />
       <workItem from="1510139154461" duration="3041000" />
-      <workItem from="1510230737853" duration="7353000" />
+      <workItem from="1510230737853" duration="7580000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="34947000" />
+    <option name="totallyTimeSpent" value="35174000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -962,9 +948,9 @@
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32995737" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32900432" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33802816" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32827735" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32827735" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.25586355" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.25586355" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Bean Validation" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -1366,7 +1352,7 @@
     <entry file="file://$PROJECT_DIR$/pom.xml">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="357">
-          <caret line="42" column="38" selection-start-line="42" selection-start-column="38" selection-end-line="42" selection-end-column="38" />
+          <caret line="42" column="25" selection-start-line="42" selection-start-column="25" selection-end-line="42" selection-end-column="25" />
           <folding />
         </state>
       </provider>
