@@ -40,8 +40,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-reactor-plugin</artifactId>
-                    <configuration>
-                        <encoding>UTF-8</encoding>
+                    <configuration>mvn
                     </configuration>
                 </plugin>
                 <plugin>

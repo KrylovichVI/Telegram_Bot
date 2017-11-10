@@ -20,7 +20,7 @@ public class Bot extends TelegramLongPollingBot{
             "http://belintersat.by/images/Telegrambot/happy_spring.jpg",
             "http://belintersat.by/images/Telegrambot/happy_winter.jpg"};
 
-    private String[] money = {"А ты их заработал?", "Тебе да!", "Тебе нет!", "А ты кто?", "Ты помоему здесь вообще не работаешь."};
+    private String[] money = {"А ты их заработал?", "Тебе, да!", "Тебе, нет!", "А ты кто?", "Ты, по-моему, здесь вообще не работаешь."};
 
     @Override
     public void onUpdateReceived(Update update){
@@ -28,7 +28,7 @@ public class Bot extends TelegramLongPollingBot{
         Message message = update.getMessage();
 
         if ((message != null) && (message.hasText())){
-            //System.out.println(message.getChatId());
+            System.out.println(message.getChatId());
             System.out.println(message.getSticker());
           sendMsg(message);
         }
