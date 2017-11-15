@@ -185,6 +185,18 @@ public class Bot extends TelegramLongPollingBot{
             }
         }
 
+        public void sendMsgNotification(){
+            if(!isGetTimes()) return;
+            SendMessage sendMessage = new SendMessage().setChatId(getCHAT_NKU_ID());
+            sendMessage.setText("Господа, у нас сегодня " + getTimes() + " сутки полета! УРА!!!");
+
+            try {
+                sendMessage(sendMessage);
+            } catch (TelegramApiException e) {
+                e.printStackTrace();
+            }
+        }
+
         private void sendAbonentsList(Message message){
 
             SendMessage sendMessage = new SendMessage().setChatId(message.getChatId());
@@ -249,11 +261,32 @@ public class Bot extends TelegramLongPollingBot{
                 e.printStackTrace();
             }
         }
-        private long getTimes() {
+        private int getTimes() {
             GregorianCalendar calendar = new GregorianCalendar(2016, Calendar.JANUARY, 15);
             GregorianCalendar calendar1 = new GregorianCalendar();
             long different = calendar1.getTimeInMillis() - calendar.getTimeInMillis();
-            System.out.println(different);
             return (int)(different / (1000*60*60*24));
         }
+
+        private boolean isGetTimes(){
+            int result = getTimes();
+            if(result <= 999){
+                int a, b, c;
+                a =  result / 100;
+                b = (result / 10) % 10;
+                c =  result % 10;
+                return ( (b == c && c == 0) || ( a == b && b == c))? true : false;
+            } else if(result >= 1000 && result < 10000){
+                int a, b, c, d;
+                a =  result / 1000;
+                b = (result / 100) % 10;
+                c = (result / 10) % 10;
+                d =  result % 10;
+                return  ((b == c && c == d && d == 0) || (a == b && b == c && c == d)) ?  true :  false ;
+            }
+            return false;
+        }
+
+
+
 }
