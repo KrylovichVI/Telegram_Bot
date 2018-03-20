@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="dataSourceStorageLocal">
+    <data-source name="MySQL - telegrambotdb@localhost" uuid="150d413a-bdee-46a3-9b59-804b2a458a2e">
+      <secret-storage>master_key</secret-storage>
+      <user-name>root</user-name>
+      <schema-pattern>telegrambotdb.*</schema-pattern>
+      <default-schemas>telegrambotdb.*</default-schemas>
+    </data-source>
+  </component>
+</project>
