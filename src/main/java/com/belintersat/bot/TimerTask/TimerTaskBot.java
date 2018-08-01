@@ -1,16 +1,18 @@
 package com.belintersat.bot.TimerTask;
 import com.belintersat.bot.Bot.Bot;
+import com.belintersat.bot.Domain.FlagDAO;
+import com.belintersat.bot.Domain.Flags;
 import com.google.common.base.Throwables;
 import org.apache.log4j.Logger;
 
 import java.io.*;
 import java.sql.*;
+import java.util.Date;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Properties;
-import java.util.TimerTask;
+import java.util.*;
+
+
 
 public class TimerTaskBot extends TimerTask {
     private transient Bot bot;
@@ -36,119 +38,81 @@ public class TimerTaskBot extends TimerTask {
     public void run() {
         Date nowTime = new Date();
         timerTask(nowTime);
+
     }
 
-    private void timerTask(Date nowTime){
-
+    private void timerTask(Date nowTime) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("HHmm");
         SimpleDateFormat dateFormatSlach = new SimpleDateFormat("HH:mm");
-        java.sql.Date resultDate = null;
         java.sql.Date resultDateNowTime = new java.sql.Date(nowTime.getTime());
+        java.sql.Date resultDate = null;
 
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(nowTime);
 
+        FlagDAO flagDAO = new FlagDAO();
 
-        System.out.println(resultDateNowTime);
-        try {
-            Class.forName("com.mysql.jdbc.Driver");
-        } catch (ClassNotFoundException e) {
-            String ex = Throwables.getStackTraceAsString(e);
-            logger.error("Не удалось подключиться к JDBC Driver " + ex);
-            e.printStackTrace();
+        List<Flags> allFlags = flagDAO.getAllFlags();
+        for(Flags flag : allFlags) {
+            if (!resultDateNowTime.toString().equals(flag.getDate().toString())) {
+                flag.setValue(0);
+                flag.setDate(resultDateNowTime);
+                flagDAO.updateFlag(flag);
+            }
         }
+        sendHoliday(calendar, dateFormatSlach, nowTime);
 
-
-        try(Connection connection = DriverManager.getConnection(getProperties("url"), getProperties("login"), getProperties("password"));
-            Statement statement = connection.createStatement()) {
-            boolean FLAG_WEATHER = false, FLAG_NOTIFICATION = false, FLAG_BIRTHDAY = false;
-            ResultSet resultSet = statement.executeQuery("SELECT name, value, date FROM flags");
-            while(resultSet.next()){
-                switch (resultSet.getString("name")){
-                    case "FLAG_WEATHER" : {
-                        FLAG_WEATHER = resultSet.getBoolean("value");
-                        break;
-                    }
-                    case "FLAG_NOTIFICATION" : {
-                        FLAG_NOTIFICATION = resultSet.getBoolean("value");
-                        break;
-                    }
-                    case "FLAG_BIRTHDAY" : {
-                        FLAG_BIRTHDAY = resultSet.getBoolean("value");
-                        break;
-                    }
-                    default: break;
-                }
-                resultDate = resultSet.getDate("date");
-
+        if ((calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY) || (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY)) {
+            if (dateFormatSlach.format(nowTime).equals(TIME_WEEKEND) || (Integer.valueOf(dateFormat.format(nowTime)) > (TIME_WEEKEND_INT) && flagDAO.getFlagByName("FLAG_BIRTHDAY").getValue() == 0)) {
+                bot.sendMsgBirthday(nowTime);
+                Flags flag_birthday = flagDAO.getFlagByName("FLAG_BIRTHDAY");
+                flag_birthday.setValue(1);
+                flag_birthday.setDate(resultDateNowTime);
+                flagDAO.updateFlag(flag_birthday);
+                logger.info("FLAG_BIRTHDAY  изменен на true ");
             }
-
-            if (!resultDateNowTime.toString().equals(resultDate.toString())){
-                if(statement.execute("UPDATE flags SET value = false, date = CURRENT_DATE ")) {
-                    logger.info("Флаги изменены ");
-                } else{
-                    logger.error("Флаги не поменялись");
-                }
-
+            if (dateFormatSlach.format(nowTime).equals(TIME_WEEKEND) || (Integer.valueOf(dateFormat.format(nowTime)) > (TIME_WEEKEND_INT) && flagDAO.getFlagByName("FLAG_WEATHER").getValue() == 0)) {
+                bot.sendMsgWeather();
+                Flags flag_weather = flagDAO.getFlagByName("FLAG_WEATHER");
+                flag_weather.setValue(1);
+                flag_weather.setDate(resultDateNowTime);
+                flagDAO.updateFlag(flag_weather);
+                logger.info("FLAG_WEATHER  изменен на true ");
             }
-            sendHoliday(calendar, dateFormatSlach, nowTime);
-
-            if ((calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY) || (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY)) {
-                if (dateFormatSlach.format(nowTime).equals(TIME_WEEKEND) || (Integer.valueOf(dateFormat.format(nowTime)) > (TIME_WEEKEND_INT) && FLAG_BIRTHDAY == false)) {
-                    bot.sendMsgBirthday(nowTime);
-                    statement.execute("UPDATE flags SET value = true WHERE name = 'FLAG_BIRTHDAY'");
-                    logger.info("FLAG_BIRTHDAY  изменен на true ");
-                }
-                if (dateFormatSlach.format(nowTime).equals(TIME_WEEKEND) || (Integer.valueOf(dateFormat.format(nowTime)) > (TIME_WEEKEND_INT) && FLAG_WEATHER == false)) {
-                    bot.sendMsgWeather();
-                    statement.execute("UPDATE flags SET value = true WHERE name = 'FLAG_WEATHER'");
-                    logger.info("FLAG_WEATHER  изменен на true ");
-                }
-                if (dateFormatSlach.format(nowTime).equals(TIME_WEEKEND) || (Integer.valueOf(dateFormat.format(nowTime)) > (TIME_WEEKEND_INT) && FLAG_NOTIFICATION == false)) {
-                    bot.sendMsgNotification();
-                    statement.execute("UPDATE flags SET value = true WHERE name = 'FLAG_NOTIFICATION'");
-                    logger.info("FLAG_NOTIFICATION  изменен на true ");
-                }
+            if (dateFormatSlach.format(nowTime).equals(TIME_WEEKEND) || (Integer.valueOf(dateFormat.format(nowTime)) > (TIME_WEEKEND_INT) && flagDAO.getFlagByName("FLAG_NOTIFICATION").getValue() == 0)) {
+                bot.sendMsgNotification();
+                Flags flag_notification = flagDAO.getFlagByName("FLAG_NOTIFICATION");
+                flag_notification.setValue(1);
+                flag_notification.setDate(resultDateNowTime);
+                flagDAO.updateFlag(flag_notification);
+                logger.info("FLAG_NOTIFICATION  изменен на true ");
+            }
             } else {
-                if (dateFormatSlach.format(nowTime).equals(TIME_EQUALS) || (Integer.valueOf(dateFormat.format(nowTime)) > (TIME_BIRTH_INT) && FLAG_BIRTHDAY == false)) {
+                if (dateFormatSlach.format(nowTime).equals(TIME_EQUALS) || (Integer.valueOf(dateFormat.format(nowTime)) > (TIME_BIRTH_INT) &&flagDAO.getFlagByName("FLAG_BIRTHDAY").getValue() == 0)) {
                     bot.sendMsgBirthday(nowTime);
-                    statement.execute("UPDATE flags SET value = true WHERE name = 'FLAG_BIRTHDAY'");
-                    logger.info("FLAG_BIRTHDAY  изменен на true ");
+                    Flags flag_birthday = flagDAO.getFlagByName("FLAG_BIRTHDAY");
+                    flag_birthday.setValue(1);
+                    flag_birthday.setDate(resultDateNowTime);
+                    flagDAO.updateFlag(flag_birthday);
                 }
-                if (dateFormatSlach.format(nowTime).equals(TIME_WEATHER) || (Integer.valueOf(dateFormat.format(nowTime)) > (TIME_WETH_INT) && FLAG_WEATHER == false)) {
+                if (dateFormatSlach.format(nowTime).equals(TIME_WEATHER) || (Integer.valueOf(dateFormat.format(nowTime)) > (TIME_WETH_INT) && flagDAO.getFlagByName("FLAG_WEATHER").getValue() == 0)) {
                     bot.sendMsgWeather();
-                    statement.execute("UPDATE flags SET value = true WHERE name = 'FLAG_WEATHER'");
-                    logger.info("FLAG_WEATHER  изменен на true ");
+                    Flags flag_weather = flagDAO.getFlagByName("FLAG_WEATHER");
+                    flag_weather.setValue(1);
+                    flag_weather.setDate(resultDateNowTime);
+                    flagDAO.updateFlag(flag_weather);
                 }
-                if (dateFormatSlach.format(nowTime).equals(TIME_NOTIFICATION) || (Integer.valueOf(dateFormat.format(nowTime)) > (TIME_NOTIF_INT) && FLAG_NOTIFICATION == false)) {
+                if (dateFormatSlach.format(nowTime).equals(TIME_NOTIFICATION) || (Integer.valueOf(dateFormat.format(nowTime)) > (TIME_NOTIF_INT) && flagDAO.getFlagByName("FLAG_NOTIFICATION").getValue() == 0)) {
                     bot.sendMsgNotification();
-                    statement.execute("UPDATE flags SET value = true WHERE name = 'FLAG_NOTIFICATION'");
-                    logger.info("FLAG_NOTIFICATION  изменен на true ");
+                    Flags flag_notification = flagDAO.getFlagByName("FLAG_NOTIFICATION");
+                    flag_notification.setValue(1);
+                    flag_notification.setDate(resultDateNowTime);
+                    flagDAO.updateFlag(flag_notification);
                 }
             }
-
-            System.out.println(dateFormatSlach.format(nowTime));
-        }catch(SQLException ex){
-            String e = Throwables.getStackTraceAsString(ex);
-            logger.error("Не удается получить connection " + e);
-            ex.printStackTrace();
-        }
+        System.out.println(dateFormatSlach.format(nowTime));
     }
 
-    private String getProperties(String object){
-
-        Properties properties = System.getProperties();
-        InputStream fileInputStream = getClass().getClassLoader().getResourceAsStream("properties/db.properties");
-        try {
-            properties.load(fileInputStream);
-        } catch (IOException e) {
-            String ex = Throwables.getStackTraceAsString(e);
-            e.printStackTrace();
-            logger.error("Properties не подгружены " + ex);
-        }
-
-        return properties.getProperty(object);
-    }
 
     private void sendHoliday(Calendar calendar, DateFormat dateFormatSlach, Date nowTime){
         if (calendar.get(Calendar.DATE) == 7 && calendar.getTime().getMonth() == Calendar.JANUARY && dateFormatSlach.format(nowTime).equals(TIME_HOLIDAYS)) {

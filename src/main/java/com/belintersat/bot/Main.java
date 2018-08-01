@@ -29,11 +29,6 @@ public class Main {
 
     public static void timerBirthday(Bot bot){
         TimerTaskBot timerTask = null;
-        try {
-            timerTask = new TimerTaskBot(bot);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
         if(timerTask == null){
             timerTask = new TimerTaskBot(bot);
         }

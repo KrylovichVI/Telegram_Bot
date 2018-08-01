@@ -9,27 +9,30 @@
     <database-model serializer="dbm" rdbms="MYSQL" format-version="2.5">
       <schema id="1" name="telegrambotdb"/>
       <table id="2" parent="1" name="flags"/>
-      <column id="3" parent="2" name="idFlags">
+      <table id="3" parent="1" name="hibernate_sequence"/>
+      <column id="4" parent="2" name="id">
         <mandatory>1</mandatory>
-        <data-type>int(11)</data-type>
-        <sequence-identity>1</sequence-identity>
+        <data-type>bigint(11)</data-type>
       </column>
-      <column id="4" parent="2" name="name">
+      <column id="5" parent="2" name="name">
         <mandatory>1</mandatory>
         <data-type>varchar(45)</data-type>
-      </column>
-      <column id="5" parent="2" name="value">
-        <mandatory>1</mandatory>
-        <data-type>tinyint(4)</data-type>
       </column>
       <column id="6" parent="2" name="date">
         <mandatory>1</mandatory>
         <data-type>date</data-type>
       </column>
-      <key id="7" parent="2" name="PRIMARY">
-        <columns>idFlags</columns>
+      <column id="7" parent="2" name="value">
+        <mandatory>1</mandatory>
+        <data-type>tinyint(4)</data-type>
+      </column>
+      <key id="8" parent="2" name="PRIMARY">
+        <columns>id</columns>
         <primary>1</primary>
       </key>
+      <column id="9" parent="3" name="next_val">
+        <data-type>bigint(20)</data-type>
+      </column>
     </database-model>
   </data-source>
 </component>

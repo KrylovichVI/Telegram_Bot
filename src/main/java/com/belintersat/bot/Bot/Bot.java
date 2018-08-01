@@ -111,6 +111,7 @@ public class Bot extends TelegramLongPollingBot{
 
     public long getCHAT_NKU_ID() {
         return CHAT_NKU_ID;
+        //return CHAT_TEST_ID;
     }
 
 
