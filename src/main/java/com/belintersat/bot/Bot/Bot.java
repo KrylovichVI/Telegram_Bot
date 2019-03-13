@@ -1,7 +1,6 @@
 package com.belintersat.bot.Bot;
 import com.belintersat.bot.Parser.Lists.HappyBirthdayList;
 import com.belintersat.bot.ParserXLS.Parser;
-import com.belintersat.bot.SingletonLog.SingletonLog;
 import com.belintersat.bot.Weather.Weather;
 import com.google.common.base.Throwables;
 import org.apache.log4j.Logger;
@@ -21,6 +20,7 @@ public class Bot extends TelegramLongPollingBot{
     private static final Logger logger = Logger.getLogger(Bot.class.getName());
 
     private long CHAT_TEST_ID = -1001135491699L;
+    private long CHAT_ZAVOD_ID = -250523908L;
     private long CHAT_NKU_ID = -120277389L;
     //private String STICKER = "BQADAgADowADEag0BQs_xQSkcIFKAg";
     private final String[] urlPhoto = {
@@ -109,10 +109,9 @@ public class Bot extends TelegramLongPollingBot{
         return CHAT_TEST_ID;
     }
 
-    public long getCHAT_NKU_ID() {
-        return CHAT_NKU_ID;
-        //return CHAT_TEST_ID;
-    }
+    public long getCHAT_ZAVOD_ID(){ return CHAT_ZAVOD_ID; }
+
+    public long getCHAT_NKU_ID() { return CHAT_NKU_ID;  }
 
 
     private void sendMsgBelintersatList(Message message) {
@@ -127,7 +126,7 @@ public class Bot extends TelegramLongPollingBot{
             }
         }
         if(sendMessage.getText() == null){
-            sendMessage.setText("Досвидули!");
+            sendMessage.setText("Такой сотрудник не работает на НКУ!");
         }
         try {
             sendMessage(sendMessage);
@@ -166,6 +165,7 @@ public class Bot extends TelegramLongPollingBot{
                 "Sponge Bot и команда Belintersat");
         SendPhoto sendPhoto = new SendPhoto()
                                     .setChatId(getCHAT_NKU_ID());
+
         if(date.getMonth() == Calendar.JUNE || date.getMonth() == Calendar.JULY || date.getMonth() == Calendar.AUGUST ){
             sendPhoto.setPhoto(urlPhoto[0]);
         } else if(date.getMonth() == Calendar.SEPTEMBER || date.getMonth() == Calendar.OCTOBER || date.getMonth() == Calendar.NOVEMBER ){
@@ -177,6 +177,12 @@ public class Bot extends TelegramLongPollingBot{
         }
 
         try{
+            sendMessage(sendMessage);
+            sendPhoto(sendPhoto);
+
+            sendMessage.setChatId(getCHAT_ZAVOD_ID());
+            sendPhoto.setChatId(getCHAT_ZAVOD_ID());
+
             sendMessage(sendMessage);
             sendPhoto(sendPhoto);
             logger.info("Поздравление С Днем Рождения произошло успешно ");
@@ -221,16 +227,13 @@ public class Bot extends TelegramLongPollingBot{
 
         }
 
-        public void sendMsgChristmas(){
+        public void sendMsgChristmas(String text){
             SendMessage sendMessage = new SendMessage().setChatId(getCHAT_NKU_ID());
             SendVideo sendVideo = new SendVideo().setChatId(getCHAT_NKU_ID());
 
 
 
-            sendMessage.setText(" Пусть Рождество войдет в ваш дом, \nС собой неся все то, что свято! \nПусть будет смех и радость в нем," +
-                    "От счастья и душа богата!\n \nПускай уютом дышит дом, \nПусть ангел вас оберегает!\n" +
-                    "Мы поздравляем с Рождеством \nИ только лучшего желаем!\n" +
-                    "\nSponge Bot и команда Belintersat");
+            sendMessage.setText(text);
 
                 sendVideo.setVideo(urlPhoto[4]);
             try{
@@ -245,6 +248,8 @@ public class Bot extends TelegramLongPollingBot{
                 logger.error("Рождественское поздравление не отправлено " + ex);
             }
         }
+
+
 
         public void sendMsg23thFebruary(){
 

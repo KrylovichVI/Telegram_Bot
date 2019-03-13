@@ -28,6 +28,7 @@ public class TimerTaskBot extends TimerTask {
     private String TIME_WEATHER = "07:00";
     private String TIME_WEEKEND = "08:30";
     private String TIME_HOLIDAYS = "07:30";
+    private String TIME_NEW_YEAR = "00:01";
 
 
     public TimerTaskBot(Bot bot) {
@@ -110,13 +111,22 @@ public class TimerTaskBot extends TimerTask {
                     flagDAO.updateFlag(flag_notification);
                 }
             }
-        System.out.println(dateFormatSlach.format(nowTime));
+//        System.out.println(dateFormatSlach.format(nowTime));
     }
 
 
     private void sendHoliday(Calendar calendar, DateFormat dateFormatSlach, Date nowTime){
-        if (calendar.get(Calendar.DATE) == 7 && calendar.getTime().getMonth() == Calendar.JANUARY && dateFormatSlach.format(nowTime).equals(TIME_HOLIDAYS)) {
-            bot.sendMsgChristmas();
+        if (calendar.get(Calendar.DATE) == 1 && calendar.getTime().getMonth() == Calendar.JANUARY && dateFormatSlach.format(nowTime).equals(TIME_NEW_YEAR)) {
+            String text = "Сегодня — первая страница из 365 страниц книги. Напишите её хорошо.\n" +
+                    "С Новым годом всех!\n" +
+                    "\nSponge Bot и команда Belintersat";
+            bot.sendMsgChristmas(text);
+        }else if (calendar.get(Calendar.DATE) == 7 && calendar.getTime().getMonth() == Calendar.JANUARY && dateFormatSlach.format(nowTime).equals(TIME_HOLIDAYS)) {
+            String text = " Пусть Рождество войдет в ваш дом, \nС собой неся все то, что свято! \nПусть будет смех и радость в нем," +
+                    "От счастья и душа богата!\n \nПускай уютом дышит дом, \nПусть ангел вас оберегает!\n" +
+                    "Мы поздравляем с Рождеством \nИ только лучшего желаем!\n" +
+                    "\nSponge Bot и команда Belintersat";
+            bot.sendMsgChristmas(text);
         } else if(calendar.get(Calendar.DATE) == 23 && calendar.getTime().getMonth() == Calendar.FEBRUARY && dateFormatSlach.format(nowTime).equals(TIME_HOLIDAYS) ){
             bot.sendMsg23thFebruary();
         } else if(calendar.get(Calendar.DATE) == 8 && calendar.getTime().getMonth() == Calendar.MARCH && dateFormatSlach.format(nowTime).equals(TIME_HOLIDAYS) ){

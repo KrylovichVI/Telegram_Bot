@@ -30,12 +30,12 @@ public class Weather {
         SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
         try {
             DailyForecast forecast = own.dailyForecastByCityName(weatherCity, forecastDays);
-            DailyForecast.Forecast dayForecast = forecast.getForecastInstance(forecast.getForecastCount() - 1);
+            DailyForecast.Forecast dayForecast = forecast.getForecastInstance(0);
             DailyForecast.Forecast.Temperature  temperature = dayForecast.getTemperatureInstance();
 
 
             CurrentWeather currentWeather = own.currentWeatherByCityName(weatherCity);
-            AbstractWeather.Weather weatherInstance = currentWeather.getWeatherInstance(forecast.getForecastCount() - 1);
+            AbstractWeather.Weather weatherInstance = currentWeather.getWeatherInstance(0);
             CurrentWeather.Main mainInstance = currentWeather.getMainInstance();
             CurrentWeather.Sys sysInstance = currentWeather.getSysInstance();
             CurrentWeather.Wind windInstance = currentWeather.getWindInstance();

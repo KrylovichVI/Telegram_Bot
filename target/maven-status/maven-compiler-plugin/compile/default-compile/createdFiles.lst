@@ -2,8 +2,12 @@ com\belintersat\bot\Main.class
 com\belintersat\bot\Parser\Lists\BelintersatList.class
 com\belintersat\bot\ParserXLS\Parser.class
 com\belintersat\bot\SingletonLog\SingletonLog.class
+com\belintersat\bot\Domain\Flags.class
 com\belintersat\bot\Parser\Lists\HappyBirthdayList.class
 com\belintersat\bot\TimerTask\TimerTaskBot.class
 com\belintersat\bot\Weather\Weather.class
+com\belintersat\bot\HibernateUtil\HibernateUtil.class
 com\belintersat\bot\SingletonLog\SingletonLog$MyFormat.class
+com\belintersat\bot\Domain\DAO.class
+com\belintersat\bot\Domain\FlagDAO.class
 com\belintersat\bot\Bot\Bot.class

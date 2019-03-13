@@ -5,7 +5,7 @@ import java.util.Collection;
 /**
  * Created by KrylovichVI on 01.08.2018.
  */
-public interface DAO {
+public interface DAO   {
     void addFlag(Flags flag);
     void updateFlag(Flags flags);
     Flags getFlagById(long flag_id);

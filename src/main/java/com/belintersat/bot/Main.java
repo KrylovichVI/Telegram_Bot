@@ -28,6 +28,7 @@ public class Main {
     }
 
     public static void timerBirthday(Bot bot){
+        System.out.println("Start");
         TimerTaskBot timerTask = null;
         if(timerTask == null){
             timerTask = new TimerTaskBot(bot);
