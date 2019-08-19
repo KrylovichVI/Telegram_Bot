@@ -21,7 +21,7 @@ public class Bot extends TelegramLongPollingBot{
 
     private long CHAT_TEST_ID = -1001135491699L;
     private long CHAT_ZAVOD_ID = -250523908L;
-    private long CHAT_NKU_ID = -120277389L;
+    private long CHAT_NKU_ID = -1001489666731L;
     //private String STICKER = "BQADAgADowADEag0BQs_xQSkcIFKAg";
     private final String[] urlPhoto = {
             "http://belintersat.by/images/Telegrambot/happy_summer.jpg",
@@ -31,7 +31,8 @@ public class Bot extends TelegramLongPollingBot{
             "http://belintersat.by/images/Telegrambot/SpongeBot.mp4",
             "http://belintersat.by/images/23-feb.jpg",
             "http://belintersat.by/images/8-marta.jpg",
-            "http://en.belintersat.by/images/16-jan.jpg" };
+            "http://en.belintersat.by/images/16-jan.jpg",
+            "https://belintersat.com/images/gallery/zapusk_foto/belintersat_satellite.jpg"};
 
     private String[] money = {"А ты их заработал?", "Тебе, да!", "Тебе, нет!", "А ты кто?", "Ты, по-моему, здесь вообще не работаешь."};
 
@@ -74,7 +75,9 @@ public class Bot extends TelegramLongPollingBot{
         else if(message.getText().equalsIgnoreCase("#list")){
             sendAbonentsList(message);
         }
-        else if(message.getText().contains("sent to:") || message.getText().contains("Sent to:")){
+        else if((message.getText().contains("sent to:") || message.getText().contains("Sent to:"))
+                ||(message.getText().contains("prof to:") || message.getText().contains("Prof to:")
+                )){
             sendBotMsg(message);
         }
         else if(message.getText().contains("деньги") || message.getText().contains("Деньги") || message.getText().contains("Денег") || message.getText().contains("денег")){
@@ -86,7 +89,9 @@ public class Bot extends TelegramLongPollingBot{
         else if(message.getText().equalsIgnoreCase("#погода")){
             sendMsgWeather(message);
         }
-
+        else if(message.getText().equalsIgnoreCase("/help")) {
+            sendMsghelper(message);
+        }
 //        if(message.getText().contains("АХТУНГ")){
 //            //DeleteMessage deleteMessage = new DeleteMessage();
 //            //deleteMessage.setMessageId(message.getMessageId());
@@ -116,8 +121,8 @@ public class Bot extends TelegramLongPollingBot{
 
     private void sendMsgBelintersatList(Message message) {
         ClassLoader cl = this.getClass().getClassLoader();
-        HashMap<String, String> belintersatMap = Parser.parseAbonentList(ClassLoader.getSystemResourceAsStream("xls/List.xls")).getBelintersatMap();
-        Set<String> keySet = Parser.parseAbonentList(ClassLoader.getSystemResourceAsStream("xls/List.xls")).getBelintersatMap().keySet();
+        HashMap<String, String> belintersatMap = Parser.parseAbonentList(ClassLoader.getSystemResourceAsStream("xls/List_Employer.xls")).getBelintersatMap();
+        Set<String> keySet = Parser.parseAbonentList(ClassLoader.getSystemResourceAsStream("xls/List_Employer.xls")).getBelintersatMap().keySet();
         SendMessage sendMessage = new SendMessage().setChatId(message.getChatId());
         for (String key : keySet) {
             if (message.getText().equalsIgnoreCase(key)){
@@ -208,23 +213,27 @@ public class Bot extends TelegramLongPollingBot{
         }
 
         private void sendBotMsg(Message message){
-            SendMessage sendMessage = new SendMessage().setChatId(getCHAT_NKU_ID());
+            SendMessage sendMessage = new SendMessage();
             String text = message.getText();
-            if((text.substring(0, 8).contains("sent to:")) ||(text.substring(0, 8).contains("Sent to:"))) {
-                String result = text.substring(8, text.length());
-                sendMessage.setText(result);
-                try {
-                    sendMessage(sendMessage);
-                    logger.info("Команда Sent to: " + message.getFrom().getFirstName() + " выполнена успешно" );
-                } catch (TelegramApiException e) {
-                    String ex = Throwables.getStackTraceAsString(e);
-                    e.printStackTrace();
-                    logger.error("Команда Sent to:  не выполнена " + ex);
-                }
+
+            if((text.substring(0, 8).contains("sent to:")) ||(text.substring(0, 8).contains("Sent to:"))){
+                sendMessage.setChatId(getCHAT_NKU_ID());
+            } else if((text.substring(0, 8).contains("prof to:")) ||(text.substring(0, 8).contains("Prof to:"))){
+                sendMessage.setChatId(getCHAT_ZAVOD_ID());
             } else {
                 logger.error("Не верно введена команда Sent to: ");
                 return;}
 
+            String result = text.substring(8, text.length());
+            sendMessage.setText(result);
+            try {
+                sendMessage(sendMessage);
+                logger.info("Команда Sent to: " + message.getFrom().getFirstName() + " выполнена успешно" );
+            } catch (TelegramApiException e) {
+                String ex = Throwables.getStackTraceAsString(e);
+                e.printStackTrace();
+                logger.error("Команда Sent to:  не выполнена " + ex);
+            }
         }
 
         public void sendMsgChristmas(String text){
@@ -329,7 +338,7 @@ public class Bot extends TelegramLongPollingBot{
         private void sendAbonentsList(Message message){
 
             SendMessage sendMessage = new SendMessage().setChatId(message.getChatId());
-            HashMap<String, String> belintersatList = Parser.parseSipAbonents(ClassLoader.getSystemResourceAsStream("xls/Abonents.xls")).getBelintersatMap();
+            HashMap<String, String> belintersatList = Parser.parseSipAbonents(ClassLoader.getSystemResourceAsStream("xls/IPTelephone_Abonents.xls")).getBelintersatMap();
             Set<String> keySet = belintersatList.keySet();
             String result = "";
             for(String key: keySet){
@@ -438,6 +447,51 @@ public class Bot extends TelegramLongPollingBot{
 
         }
 
+        public void sendMsgApril_12() {
+            SendMessage sendMessage = new SendMessage().setChatId(getCHAT_NKU_ID());
+            SendPhoto sendPhoto = new SendPhoto()
+                    .setChatId(getCHAT_NKU_ID());
+            sendPhoto.setPhoto(urlPhoto[8]);
+            sendMessage.setText("12 апреля Всемирный день авиации и космонавтики." +
+                    "\nЭтот день является одним из самых  " +
+                    "\nзначимых для всех, кто так или иначе связан с " +
+                    "\nкосмической отраслью, кто расширяет горизонты и " +
+                    "\nоткрывает новые перспективы для развития всего" +
+                    "\nчеловечества. Поздравляем всех с этим праздником." +
+                    "\nМы надеемся, что наше сотрудничество и в" +
+                    "\nдальнейшем будет плодотворным.  Спасибо вам за то, что вы с нами!" +
+                    "\nSponge Bot и команда Belintersat");
+            try{
+                sendMessage(sendMessage);
+                sendPhoto(sendPhoto);
+                logger.info("Поздравление с 12-апреля отправлено ");
+            }
+            catch(TelegramApiException e) {
+                String ex = Throwables.getStackTraceAsString(e);
+                e.printStackTrace();
+                logger.error("Поздравление на 12-апреля не отправлено " + ex);
+            }
+        }
+
+        public void sendMsghelper(Message message){
+            SendMessage sendMessage = new SendMessage().setChatId(message.getChatId());
+            HashMap<String, String> belintersatList = Parser.parseSipAbonents(ClassLoader.getSystemResourceAsStream("xls/help.xls")).getBelintersatMap();
+            Set<String> keySet = belintersatList.keySet();
+            String result = "";
+            for(String key: keySet){
+                result += key + " - " +  belintersatList.get(key) + "\n";
+            }
+            sendMessage.setText(result);
+            try {
+                sendMessage(sendMessage);
+                logger.info("Команда /help выполнена успешно ");
+            } catch (TelegramApiException e) {
+                String ex = Throwables.getStackTraceAsString(e);
+                e.printStackTrace();
+                logger.error("Команда /help не выполнена " + ex);
+            }
+        }
+
         private int getTimes() {
             GregorianCalendar calendar = new GregorianCalendar(2016, Calendar.JANUARY, 15);
             GregorianCalendar calendar1 = new GregorianCalendar();
@@ -463,6 +517,5 @@ public class Bot extends TelegramLongPollingBot{
             }
             return false;
         }
-
 
 }

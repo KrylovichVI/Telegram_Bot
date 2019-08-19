@@ -29,6 +29,7 @@ public class TimerTaskBot extends TimerTask {
     private String TIME_WEEKEND = "08:30";
     private String TIME_HOLIDAYS = "07:30";
     private String TIME_NEW_YEAR = "00:01";
+    private String TIME_12_APRIL = "09:30";
 
 
     public TimerTaskBot(Bot bot) {
@@ -133,6 +134,8 @@ public class TimerTaskBot extends TimerTask {
             bot.sendMsg8thMarch();
         } else if(calendar.get(Calendar.DATE) == 16 && calendar.getTime().getMonth() == Calendar.JANUARY && dateFormatSlach.format(nowTime).equals(TIME_HOLIDAYS) ){
             bot.sendMsgBelintersat();
+        } else if(calendar.get(Calendar.DATE) == 12 && calendar.getTime().getMonth() == Calendar.APRIL && dateFormatSlach.format(nowTime).equals(TIME_12_APRIL)){
+            bot.sendMsgApril_12();
         }
     }
 }

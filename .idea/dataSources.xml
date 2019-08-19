@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="DataSourceManagerImpl" format="xml" hash="4077857530">
+  <component name="DataSourceManagerImpl" format="xml" hash="3980454275">
     <data-source source="LOCAL" name="PostgreSQL - telegrambotdb@localhost" uuid="95412114-78a7-4301-a4ca-7248bdbfbde3">
       <driver-ref>postgresql</driver-ref>
       <synchronize>true</synchronize>
@@ -41,7 +41,24 @@
         <library>
           <url>file://$APPLICATION_CONFIG_DIR$/jdbc-drivers/jna-platform-win-4.4.0.jar</url>
         </library>
+        <library>
+          <url>file://$APPLICATION_CONFIG_DIR$/jdbc-drivers/mysql-connector-java-5.1.44-bin.jar</url>
+        </library>
       </libraries>
+    </data-source>
+    <data-source source="LOCAL" name="hibernate.cfg.xml/Hibernate driver - telegrambotdb@localhost" uuid="ec437d66-1e12-4e8f-831f-dcb8ee85e5c4">
+      <driver-ref>e7089867-b7fd-4aff-b53d-c5a3f8fc95cd</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>com.mysql.jdbc.Driver</jdbc-driver>
+      <jdbc-url>jdbc:mysql://localhost:3307/telegrambotdb</jdbc-url>
+      <driver-properties>
+        <property name="autoReconnect" value="true" />
+        <property name="zeroDateTimeBehavior" value="convertToNull" />
+        <property name="tinyInt1isBit" value="false" />
+        <property name="characterEncoding" value="utf8" />
+        <property name="characterSetResults" value="utf8" />
+        <property name="yearIsDateType" value="false" />
+      </driver-properties>
     </data-source>
   </component>
 </project>

@@ -13,5 +13,9 @@
       <schema-pattern>telegrambotdb.*</schema-pattern>
       <default-schemas>telegrambotdb.*</default-schemas>
     </data-source>
+    <data-source name="hibernate.cfg.xml/Hibernate driver - telegrambotdb@localhost" uuid="ec437d66-1e12-4e8f-831f-dcb8ee85e5c4">
+      <secret-storage>master_key</secret-storage>
+      <user-name>root</user-name>
+    </data-source>
   </component>
 </project>
