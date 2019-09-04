@@ -1,15 +1,23 @@
 package com.belintersat.bot.ParserXLS;
+
 import com.belintersat.bot.Parser.Lists.BelintersatList;
+import com.belintersat.bot.Parser.Lists.GusBelintersatMap;
 import com.belintersat.bot.Parser.Lists.HappyBirthdayList;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
-import java.io.FileInputStream;
+import org.jopendocument.dom.spreadsheet.MutableCell;
+import org.jopendocument.dom.spreadsheet.Sheet;
+import org.jopendocument.dom.spreadsheet.SpreadSheet;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Iterator;
+import java.io.File;
 
 public class Parser {
     public static BelintersatList parseAbonentList(InputStream in){
@@ -124,6 +132,30 @@ public class Parser {
         return list;
     }
 
+
+    public static GusBelintersatMap readODS(File file, Calendar calendar) throws IOException {
+        GusBelintersatMap list = new GusBelintersatMap();
+
+        Sheet sheet = SpreadSheet.createFromFile(file).getSheet(calendar.get(Calendar.MONTH));
+
+        int columnCount = sheet.getUsedRange().getEndPoint().x;
+        int rowCount = sheet.getUsedRange().getEndPoint().y;
+
+        for(int rowIndex = 3; rowIndex <= rowCount; rowIndex++){
+            MutableCell cell;
+            String key = null;
+            ArrayList<String> value = new  ArrayList<>();
+            for(int cellIndex = 0; cellIndex <= columnCount; cellIndex++){
+                cell = sheet.getCellAt(cellIndex, rowIndex);
+                value.add(cell.getTextValue());
+                if(cellIndex == 0 ){
+                    key = cell.getTextValue();
+                }
+            }
+            list.addMap(key, value);
+        }
+        return list;
+    }
 
 }
 

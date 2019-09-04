@@ -7,15 +7,17 @@
       <schema-pattern>telegrambotdb.*</schema-pattern>
       <default-schemas>telegrambotdb.public</default-schemas>
     </data-source>
-    <data-source name="hibernate.cfg.xml/Hibernate" uuid="36ef763f-85a8-44fa-8fd7-926a0467eb12">
-      <user-name>root</user-name>
-      <user-password>dfc0dfcedfc8dfc9df90dfc7dfd3dfd9dfdbdfc6df90df85df85dfc6dfc5dfc9dfcbdfc6dfc2dfc5dfd9dfdedf90df99df99df9adf9cdf85dfdedfcfdfc6dfcfdfcddfd8dfcbdfc7dfc8dfc5dfdedfcedfc8</user-password>
-      <schema-pattern>telegrambotdb.*</schema-pattern>
-      <default-schemas>telegrambotdb.*</default-schemas>
-    </data-source>
-    <data-source name="hibernate.cfg.xml/Hibernate driver - telegrambotdb@localhost" uuid="ec437d66-1e12-4e8f-831f-dcb8ee85e5c4">
+    <data-source name="MySQL - telegrambotdb@localhost" uuid="dee5cfa5-d13f-4cf9-90d1-d669cacede77">
       <secret-storage>master_key</secret-storage>
       <user-name>root</user-name>
+      <schema-pattern>hibernate.* telegrambotdb.*</schema-pattern>
+      <default-schemas>telegrambotdb.*</default-schemas>
+    </data-source>
+    <data-source name="hibernate.cfg.xml/Hibernate" uuid="02287f64-736d-4a87-ae6c-1c60392e93ff">
+      <user-name>root</user-name>
+      <user-password>dfc0dfcedfc8dfc9df90dfc7dfd3dfd9dfdbdfc6df90df85df85dfc6dfc5dfc9dfcbdfc6dfc2dfc5dfd9dfdedf90df99df99df9adf9ddf85dfdedfcfdfc6dfcfdfcddfd8dfcbdfc7dfc8dfc5dfdedfcedfc8</user-password>
+      <schema-pattern>telegrambotdb.*</schema-pattern>
+      <default-schemas>telegrambotdb.*</default-schemas>
     </data-source>
   </component>
 </project>

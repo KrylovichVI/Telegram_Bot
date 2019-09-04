@@ -11,6 +11,9 @@ import org.telegram.telegrambots.api.objects.Message;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.exceptions.TelegramApiException;
+
+import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -46,7 +49,11 @@ public class Bot extends TelegramLongPollingBot{
         if ((message != null) && (message.hasText())){
             System.out.println(message.getChatId());
             System.out.println(message.getSticker());
-          sendMsg(message);
+            try {
+                sendMsg(message);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         //logger.info(message.getText());
     }
@@ -63,7 +70,7 @@ public class Bot extends TelegramLongPollingBot{
     }
 
 
-    private void sendMsg(Message message){
+    private void sendMsg(Message message) throws IOException {
         if ((message.getText().equalsIgnoreCase("что со спутником")) || (message.getText().equalsIgnoreCase("что со спутником?")) ||
           (message.getText().equalsIgnoreCase("что со спутником ?")))
             sendMsgSatellite(message);
@@ -92,6 +99,10 @@ public class Bot extends TelegramLongPollingBot{
         else if(message.getText().equalsIgnoreCase("/help")) {
             sendMsghelper(message);
         }
+        else if(message.getText().equalsIgnoreCase("/спутник")) {
+            sendMsgGUS(Calendar.getInstance());
+        }
+
 //        if(message.getText().contains("АХТУНГ")){
 //            //DeleteMessage deleteMessage = new DeleteMessage();
 //            //deleteMessage.setMessageId(message.getMessageId());
@@ -405,6 +416,54 @@ public class Bot extends TelegramLongPollingBot{
                 e.printStackTrace();
                 logger.error("Команда #погода не выполнена " + ex);
             }
+        }
+
+        public void sendMsgGUS(Calendar calendar) throws IOException {
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            calendar.add(Calendar.DAY_OF_MONTH, 1);
+            String format = simpleDateFormat.format(calendar.getTime());
+
+            HashMap<String, ArrayList<String>> map = Parser.readODS(new File("C:\\Users\\KrylovichVI\\Downloads\\Telegram Desktop\\2019_Orbit_Control_Plan.ods"), calendar).getList();
+            ArrayList<String> data = map.get(format);
+
+            String result = "";
+            Boolean[] position = new Boolean[data.size()];
+            int count = 0;
+            for(int i = 0; i < data.size(); i++){
+                if(!data.get(i).isEmpty()){
+                    count++;
+                    position[i] = true;
+                } else {
+                    position[i] = false;
+                }
+            }
+
+
+            if(count > 2) {
+                SendMessage sendMessage = new SendMessage().setChatId(getCHAT_TEST_ID());
+
+                ArrayList<String> text = map.get("Date");
+                for (int i = 0; i < text.size(); i++) {
+                    if (i == 0) {
+                        result += "На ближайшие сутки \"" + data.get(i) + "\" запланировано: \n";
+                        continue;
+                    }
+                    if(position[i]) {
+                        result += text.get(i) + ": " + (data.get(i).isEmpty() ? "-" : data.get(i)) + "\n";
+                    }                 }
+
+
+                sendMessage.setText(result);
+                try {
+                    sendMessage(sendMessage);
+                    logger.info("Gus уведомление выполнена успешно ");
+                } catch (TelegramApiException e) {
+                    String ex = Throwables.getStackTraceAsString(e);
+                    e.printStackTrace();
+                    logger.error("Gus уведомление по утрам не выполнена " + ex);
+                }
+            }
+            logger.info("Нет запланированных моневров.");
         }
 
         public void sendMsgWeather() {

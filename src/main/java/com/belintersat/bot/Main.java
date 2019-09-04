@@ -6,12 +6,14 @@ import org.apache.log4j.Logger;
 import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.TelegramBotsApi;
 import org.telegram.telegrambots.exceptions.TelegramApiRequestException;
-import java.util.Timer;
+
+import java.io.IOException;
+import java.util.*;
 
 
 public class Main {
     private final static Logger logger = Logger.getLogger(Main.class.getName());
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         ApiContextInitializer.init();
         TelegramBotsApi telegramBotsApi = new TelegramBotsApi();
         Bot bot = new Bot();
@@ -23,7 +25,7 @@ public class Main {
             e.printStackTrace();
             logger.error("Бот не запущен " + ex);
         }
-        timerBirthday(bot);
+        //timerBirthday(bot);
 
     }
 

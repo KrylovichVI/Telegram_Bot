@@ -22,6 +22,7 @@ public class TimerTaskBot extends TimerTask {
     private final int TIME_WEEKEND_INT = 830;
     private final int TIME_WETH_INT = 700;
     private final int TIME_NOTIF_INT = 800;
+    private final int TIME_GUS_INT = 900;
 
     private String TIME_EQUALS = "08:30";
     private String TIME_NOTIFICATION = "08:00";
@@ -30,6 +31,7 @@ public class TimerTaskBot extends TimerTask {
     private String TIME_HOLIDAYS = "07:30";
     private String TIME_NEW_YEAR = "00:01";
     private String TIME_12_APRIL = "09:30";
+    private String TIME_GUS = "11:09";
 
 
     public TimerTaskBot(Bot bot) {
@@ -39,15 +41,19 @@ public class TimerTaskBot extends TimerTask {
     @Override
     public void run() {
         Date nowTime = new Date();
-        timerTask(nowTime);
+        try {
+            timerTask(nowTime);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
     }
 
-    private void timerTask(Date nowTime) {
+    private void timerTask(Date nowTime) throws IOException {
         SimpleDateFormat dateFormat = new SimpleDateFormat("HHmm");
         SimpleDateFormat dateFormatSlach = new SimpleDateFormat("HH:mm");
         java.sql.Date resultDateNowTime = new java.sql.Date(nowTime.getTime());
-        java.sql.Date resultDate = null;
+
 
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(nowTime);
@@ -63,6 +69,15 @@ public class TimerTaskBot extends TimerTask {
             }
         }
         sendHoliday(calendar, dateFormatSlach, nowTime);
+
+        if (dateFormatSlach.format(nowTime).equals(TIME_GUS) || (Integer.valueOf(dateFormat.format(nowTime)) > (TIME_GUS_INT) && flagDAO.getFlagByName("FLAG_GUS").getValue() == 0)){
+            bot.sendMsgGUS(calendar);
+            Flags flag_gus = flagDAO.getFlagByName("FLAG_GUS");
+            flag_gus.setValue(1);
+            flag_gus.setDate(resultDateNowTime);
+            flagDAO.updateFlag(flag_gus);
+            logger.info("FLAG_GUS  изменен на true ");
+        }
 
         if ((calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY) || (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY)) {
             if (dateFormatSlach.format(nowTime).equals(TIME_WEEKEND) || (Integer.valueOf(dateFormat.format(nowTime)) > (TIME_WEEKEND_INT) && flagDAO.getFlagByName("FLAG_BIRTHDAY").getValue() == 0)) {
