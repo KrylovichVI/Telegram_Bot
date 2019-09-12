@@ -2,20 +2,20 @@ package com.belintersat.bot.Parser.Lists;
 
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 public class GusBelintersatMap {
-    private HashMap<String, ArrayList<String>> list;
+    private LinkedHashMap<String, ArrayList<String>> linkedMap;
 
     public GusBelintersatMap() {
-        this.list = new HashMap<>();
+        this.linkedMap = new LinkedHashMap<>();
     }
 
-    public HashMap<String, ArrayList<String>> getList() {
-        return list;
+    public LinkedHashMap<String, ArrayList<String>> getLinkedMap() {
+        return linkedMap;
     }
 
     public void addMap(String key, ArrayList<String> value){
-        list.put(key, value);
+        linkedMap.put(key, value);
     }
 }

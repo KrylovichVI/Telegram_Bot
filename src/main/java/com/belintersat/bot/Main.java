@@ -1,4 +1,5 @@
 package com.belintersat.bot;
+
 import com.belintersat.bot.Bot.Bot;
 import com.belintersat.bot.TimerTask.TimerTaskBot;
 import com.google.common.base.Throwables;
@@ -8,7 +9,7 @@ import org.telegram.telegrambots.TelegramBotsApi;
 import org.telegram.telegrambots.exceptions.TelegramApiRequestException;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Timer;
 
 
 public class Main {
@@ -25,11 +26,11 @@ public class Main {
             e.printStackTrace();
             logger.error("Бот не запущен " + ex);
         }
-        //timerBirthday(bot);
+        timerNotification(bot);
 
     }
 
-    public static void timerBirthday(Bot bot){
+    public static void timerNotification(Bot bot){
         System.out.println("Start");
         TimerTaskBot timerTask = null;
         if(timerTask == null){

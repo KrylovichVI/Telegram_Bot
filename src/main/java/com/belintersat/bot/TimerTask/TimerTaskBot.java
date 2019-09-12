@@ -41,15 +41,10 @@ public class TimerTaskBot extends TimerTask {
     @Override
     public void run() {
         Date nowTime = new Date();
-        try {
-            timerTask(nowTime);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
+        timerTask(nowTime);
     }
 
-    private void timerTask(Date nowTime) throws IOException {
+    private void timerTask(Date nowTime){
         SimpleDateFormat dateFormat = new SimpleDateFormat("HHmm");
         SimpleDateFormat dateFormatSlach = new SimpleDateFormat("HH:mm");
         java.sql.Date resultDateNowTime = new java.sql.Date(nowTime.getTime());
@@ -70,14 +65,14 @@ public class TimerTaskBot extends TimerTask {
         }
         sendHoliday(calendar, dateFormatSlach, nowTime);
 
-        if (dateFormatSlach.format(nowTime).equals(TIME_GUS) || (Integer.valueOf(dateFormat.format(nowTime)) > (TIME_GUS_INT) && flagDAO.getFlagByName("FLAG_GUS").getValue() == 0)){
-            bot.sendMsgGUS(calendar);
-            Flags flag_gus = flagDAO.getFlagByName("FLAG_GUS");
-            flag_gus.setValue(1);
-            flag_gus.setDate(resultDateNowTime);
-            flagDAO.updateFlag(flag_gus);
-            logger.info("FLAG_GUS  изменен на true ");
-        }
+//        if (dateFormatSlach.format(nowTime).equals(TIME_GUS) || (Integer.valueOf(dateFormat.format(nowTime)) > (TIME_GUS_INT) && flagDAO.getFlagByName("FLAG_GUS").getValue() == 0)){
+//            bot.sendMsgGUS(calendar);
+//            Flags flag_gus = flagDAO.getFlagByName("FLAG_GUS");
+//            flag_gus.setValue(1);
+//            flag_gus.setDate(resultDateNowTime);
+//            flagDAO.updateFlag(flag_gus);
+//            logger.info("FLAG_GUS  изменен на true ");
+//        }
 
         if ((calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY) || (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY)) {
             if (dateFormatSlach.format(nowTime).equals(TIME_WEEKEND) || (Integer.valueOf(dateFormat.format(nowTime)) > (TIME_WEEKEND_INT) && flagDAO.getFlagByName("FLAG_BIRTHDAY").getValue() == 0)) {
@@ -127,7 +122,7 @@ public class TimerTaskBot extends TimerTask {
                     flagDAO.updateFlag(flag_notification);
                 }
             }
-//        System.out.println(dateFormatSlach.format(nowTime));
+        System.out.println(dateFormatSlach.format(nowTime));
     }
 
 

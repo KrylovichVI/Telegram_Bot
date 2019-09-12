@@ -14,10 +14,9 @@ import org.jopendocument.dom.spreadsheet.SpreadSheet;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Iterator;
+import java.util.*;
 import java.io.File;
+import java.util.stream.Collectors;
 
 public class Parser {
     public static BelintersatList parseAbonentList(InputStream in){
@@ -133,11 +132,18 @@ public class Parser {
     }
 
 
-    public static GusBelintersatMap readODS(File file, Calendar calendar) throws IOException {
+    public static GusBelintersatMap readODS(File file, Calendar calendar) {
         GusBelintersatMap list = new GusBelintersatMap();
 
-        Sheet sheet = SpreadSheet.createFromFile(file).getSheet(calendar.get(Calendar.MONTH));
+        Sheet sheet = null;
 
+        try {
+            sheet = SpreadSheet.createFromFile(file).getSheet(calendar.get(Calendar.MONTH));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        if(sheet == null) return null;
         int columnCount = sheet.getUsedRange().getEndPoint().x;
         int rowCount = sheet.getUsedRange().getEndPoint().y;
 
@@ -156,6 +162,35 @@ public class Parser {
         }
         return list;
     }
+
+    public static File writeODS(LinkedHashMap<String, ArrayList<String>> map) throws IOException {
+        SpreadSheet ooSShet = SpreadSheet.create(1,1,1);
+        Sheet firstSheet = ooSShet.getFirstSheet();
+        int sizeCol = map.entrySet()
+                .stream()
+                .findFirst()
+                .get()
+                .getValue()
+                .size();
+
+        firstSheet.setRowCount(map.size());
+        firstSheet.setColumnCount(sizeCol);
+
+        Set<String> keySet = map.keySet();
+        int row = 0;
+
+        for(String key : keySet){
+            ArrayList<String> values = map.get(key);
+            for(int cell = 0; cell < values.size(); cell++){
+                firstSheet.setValueAt(values.get(cell), cell, row);
+            }
+            row ++;
+        }
+
+        return ooSShet.saveAs(new File("./src/main/resources/files/Test.ods"));
+    }
+
+
 
 }
 

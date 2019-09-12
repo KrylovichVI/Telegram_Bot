@@ -1,9 +1,11 @@
 package com.belintersat.bot.Bot;
+
 import com.belintersat.bot.Parser.Lists.HappyBirthdayList;
 import com.belintersat.bot.ParserXLS.Parser;
 import com.belintersat.bot.Weather.Weather;
 import com.google.common.base.Throwables;
 import org.apache.log4j.Logger;
+import org.telegram.telegrambots.api.methods.send.SendDocument;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.api.methods.send.SendVideo;
@@ -25,6 +27,8 @@ public class Bot extends TelegramLongPollingBot{
     private long CHAT_TEST_ID = -1001135491699L;
     private long CHAT_ZAVOD_ID = -250523908L;
     private long CHAT_NKU_ID = -1001489666731L;
+    private long CHAT_GUS_ID = -1001074603910L;
+
     //private String STICKER = "BQADAgADowADEag0BQs_xQSkcIFKAg";
     private final String[] urlPhoto = {
             "http://belintersat.by/images/Telegrambot/happy_summer.jpg",
@@ -38,6 +42,8 @@ public class Bot extends TelegramLongPollingBot{
             "https://belintersat.com/images/gallery/zapusk_foto/belintersat_satellite.jpg"};
 
     private String[] money = {"А ты их заработал?", "Тебе, да!", "Тебе, нет!", "А ты кто?", "Ты, по-моему, здесь вообще не работаешь."};
+
+    private LinkedHashMap<String, ArrayList<String>> linkedHashMap;
 
     @Override
     public void onUpdateReceived(Update update){
@@ -97,10 +103,13 @@ public class Bot extends TelegramLongPollingBot{
             sendMsgWeather(message);
         }
         else if(message.getText().equalsIgnoreCase("/help")) {
-            sendMsghelper(message);
+            sendMsgHelper(message);
         }
         else if(message.getText().equalsIgnoreCase("/спутник")) {
             sendMsgGUS(Calendar.getInstance());
+        }
+        else if(message.getText().equalsIgnoreCase("/цуп")){
+            sendMsgGusFile(message);
         }
 
 //        if(message.getText().contains("АХТУНГ")){
@@ -418,13 +427,14 @@ public class Bot extends TelegramLongPollingBot{
             }
         }
 
-        public void sendMsgGUS(Calendar calendar) throws IOException {
+        public void sendMsgGUS(Calendar calendar){
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
             calendar.add(Calendar.DAY_OF_MONTH, 1);
             String format = simpleDateFormat.format(calendar.getTime());
 
-            HashMap<String, ArrayList<String>> map = Parser.readODS(new File("C:\\Users\\KrylovichVI\\Downloads\\Telegram Desktop\\2019_Orbit_Control_Plan.ods"), calendar).getList();
-            ArrayList<String> data = map.get(format);
+            linkedHashMap = Parser.readODS(new File("C:\\Users\\KrylovichVI\\Downloads\\Telegram Desktop\\2019_Orbit_Control_Plan.ods"), calendar).getLinkedMap();
+            ArrayList<String> data = linkedHashMap.get(format);
+
 
             String result = "";
             Boolean[] position = new Boolean[data.size()];
@@ -438,14 +448,15 @@ public class Bot extends TelegramLongPollingBot{
                 }
             }
 
-
             if(count > 2) {
                 SendMessage sendMessage = new SendMessage().setChatId(getCHAT_TEST_ID());
 
-                ArrayList<String> text = map.get("Date");
+                ArrayList<String> text = linkedHashMap.get("Date");
                 for (int i = 0; i < text.size(); i++) {
                     if (i == 0) {
                         result += "На ближайшие сутки \"" + data.get(i) + "\" запланировано: \n";
+                        continue;
+                    } else if(i == 1){
                         continue;
                     }
                     if(position[i]) {
@@ -466,7 +477,57 @@ public class Bot extends TelegramLongPollingBot{
             logger.info("Нет запланированных моневров.");
         }
 
-        public void sendMsgWeather() {
+        public void sendMsgGusFile(Message message) throws IOException {
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            Calendar calendar = Calendar.getInstance();
+            String format = simpleDateFormat.format(calendar.getTime());
+
+            SendDocument sendDocument = new SendDocument().setChatId(getCHAT_TEST_ID());
+
+            File gusFile = getGusFile(calendar, format);
+            if(gusFile.isFile()) {
+                sendDocument.setNewDocument(gusFile);
+
+                try {
+                    sendDocument(sendDocument);
+                } catch (TelegramApiException e) {
+                    e.printStackTrace();
+                }
+            } else{
+                SendMessage sendMessage = new SendMessage().setChatId(message.getChatId());
+                sendMessage.setText("Извините, мы не можем сгенерировать вам файл");
+                try {
+                    sendMessage(sendMessage);
+                } catch (TelegramApiException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+    private File getGusFile(Calendar calendar, String format) throws IOException {
+        if(linkedHashMap == null)
+            linkedHashMap = Parser.readODS(new File("C:\\Users\\KrylovichVI\\Downloads\\Telegram Desktop\\2019_Orbit_Control_Plan.ods"), calendar).getLinkedMap();
+
+        if(linkedHashMap.containsKey(format)) {
+
+            LinkedHashMap<String, ArrayList<String>> sortedLinkedHashMap = getIndexLinkedHashMap(linkedHashMap, format);
+
+//           linkedMap.entrySet()
+//                    .stream()
+//                    .skip(index)
+//                    .collect(Collectors.toMap(
+//                            key -> key,
+//                            key -> (linkedMap.get(key)),
+//                            (e1, e2) -> e1, LinkedHashMap::new
+//                    ));
+
+            return Parser.writeODS(sortedLinkedHashMap);
+        }
+        return null;
+    }
+
+
+    public void sendMsgWeather() {
             SendMessage sendMessage = new SendMessage().setChatId(getCHAT_NKU_ID());
             sendMessage.setText(Weather.showWeather());
             try {
@@ -532,7 +593,7 @@ public class Bot extends TelegramLongPollingBot{
             }
         }
 
-        public void sendMsghelper(Message message){
+        public void sendMsgHelper(Message message){
             SendMessage sendMessage = new SendMessage().setChatId(message.getChatId());
             HashMap<String, String> belintersatList = Parser.parseSipAbonents(ClassLoader.getSystemResourceAsStream("xls/help.xls")).getBelintersatMap();
             Set<String> keySet = belintersatList.keySet();
@@ -549,6 +610,27 @@ public class Bot extends TelegramLongPollingBot{
                 e.printStackTrace();
                 logger.error("Команда /help не выполнена " + ex);
             }
+        }
+
+        private  LinkedHashMap<String, ArrayList<String>> getIndexLinkedHashMap(LinkedHashMap<String, ArrayList<String>> linkedMap, String format) {
+            int count = 0;
+            Iterator<String> iterator = linkedMap.keySet().iterator();
+            LinkedHashMap<String, ArrayList<String>> mapIndex = new LinkedHashMap<>();
+
+            while (iterator.hasNext()){
+                String next = iterator.next();
+                if(next.equals("Date")){
+                    mapIndex.put(next, linkedMap.get(next));
+                }
+                if(next.equals(format)){
+                    count++;
+                }
+                if(count == 1){
+                    mapIndex.put(next, linkedMap.get(next));
+                }
+
+            }
+            return mapIndex;
         }
 
         private int getTimes() {
