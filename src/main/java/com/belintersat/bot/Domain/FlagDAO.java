@@ -1,11 +1,9 @@
 package com.belintersat.bot.Domain;
 
 import com.belintersat.bot.HibernateUtil.HibernateUtil;
-import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 
-import java.util.Collection;
 import java.util.List;
 
 /**

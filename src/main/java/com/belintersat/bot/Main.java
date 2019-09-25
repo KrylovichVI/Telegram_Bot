@@ -1,9 +1,11 @@
 package com.belintersat.bot;
 
 import com.belintersat.bot.Bot.Bot;
+import com.belintersat.bot.HibernateUtil.HibernateUtil;
 import com.belintersat.bot.TimerTask.TimerTaskBot;
 import com.google.common.base.Throwables;
 import org.apache.log4j.Logger;
+import org.hibernate.SessionFactory;
 import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.TelegramBotsApi;
 import org.telegram.telegrambots.exceptions.TelegramApiRequestException;
@@ -19,14 +21,17 @@ public class Main {
         TelegramBotsApi telegramBotsApi = new TelegramBotsApi();
         Bot bot = new Bot();
         try {
-            telegramBotsApi.registerBot(bot);
+             telegramBotsApi.registerBot(bot);
             logger.info("Бот запущен ");
         } catch (TelegramApiRequestException e) {
             String ex = Throwables.getStackTraceAsString(e);
             e.printStackTrace();
             logger.error("Бот не запущен " + ex);
         }
-        timerNotification(bot);
+       // timerNotification(bot);
+        SessionFactory instance = HibernateUtil.getInstance();
+        System.out.println(instance);
+
 
     }
 
