@@ -28,11 +28,7 @@ public class Main {
             e.printStackTrace();
             logger.error("Бот не запущен " + ex);
         }
-       // timerNotification(bot);
-        SessionFactory instance = HibernateUtil.getInstance();
-        System.out.println(instance);
-
-
+        timerNotification(bot);
     }
 
     public static void timerNotification(Bot bot){

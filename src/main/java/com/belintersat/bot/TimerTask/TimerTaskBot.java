@@ -2,6 +2,8 @@ package com.belintersat.bot.TimerTask;
 import com.belintersat.bot.Bot.Bot;
 import com.belintersat.bot.Domain.FlagDAO;
 import com.belintersat.bot.Domain.Flags;
+import com.belintersat.bot.Parser.Lists.GusBelintersatMap;
+import com.belintersat.bot.ParserXLS.Parser;
 import com.google.common.base.Throwables;
 import org.apache.log4j.Logger;
 
@@ -55,6 +57,7 @@ public class TimerTaskBot extends TimerTask {
 
         FlagDAO flagDAO = new FlagDAO();
 
+
         List<Flags> allFlags = flagDAO.getAllFlags();
         for(Flags flag : allFlags) {
             if (!resultDateNowTime.toString().equals(flag.getDate().toString())) {
@@ -65,14 +68,14 @@ public class TimerTaskBot extends TimerTask {
         }
         sendHoliday(calendar, dateFormatSlach, nowTime);
 
-//        if (dateFormatSlach.format(nowTime).equals(TIME_GUS) || (Integer.valueOf(dateFormat.format(nowTime)) > (TIME_GUS_INT) && flagDAO.getFlagByName("FLAG_GUS").getValue() == 0)){
-//            bot.sendMsgGUS(calendar);
-//            Flags flag_gus = flagDAO.getFlagByName("FLAG_GUS");
-//            flag_gus.setValue(1);
-//            flag_gus.setDate(resultDateNowTime);
-//            flagDAO.updateFlag(flag_gus);
-//            logger.info("FLAG_GUS  изменен на true ");
-//        }
+        if (dateFormatSlach.format(nowTime).equals(TIME_GUS) || (Integer.valueOf(dateFormat.format(nowTime)) > (TIME_GUS_INT) && flagDAO.getFlagByName("FLAG_GUS").getValue() == 0)){
+            bot.sendMsgGUS(calendar);
+            Flags flag_gus = flagDAO.getFlagByName("FLAG_GUS");
+            flag_gus.setValue(1);
+            flag_gus.setDate(resultDateNowTime);
+            flagDAO.updateFlag(flag_gus);
+            logger.info("FLAG_GUS  изменен на true ");
+        }
 
         if ((calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY) || (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY)) {
             if (dateFormatSlach.format(nowTime).equals(TIME_WEEKEND) || (Integer.valueOf(dateFormat.format(nowTime)) > (TIME_WEEKEND_INT) && flagDAO.getFlagByName("FLAG_BIRTHDAY").getValue() == 0)) {

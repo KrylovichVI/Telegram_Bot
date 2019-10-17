@@ -5,6 +5,7 @@ import com.belintersat.bot.ParserXLS.Parser;
 import com.belintersat.bot.Weather.Weather;
 import com.google.common.base.Throwables;
 import org.apache.log4j.Logger;
+import org.jopendocument.dom.spreadsheet.SpreadSheet;
 import org.telegram.telegrambots.api.methods.send.SendDocument;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.methods.send.SendPhoto;
@@ -17,6 +18,7 @@ import org.telegram.telegrambots.exceptions.TelegramApiException;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.*;
 
 
@@ -31,7 +33,8 @@ public class Bot extends TelegramLongPollingBot{
     private long CHAT_NKU_ID = -1001489666731L;
     private long CHAT_GUS_ID = -1001074603910L;
 
-    //private String STICKER = "BQADAgADowADEag0BQs_xQSkcIFKAg";
+    private String pathNameOds = "ods/2019_Orbit_Control_Plan.ods";
+
     private final String[] urlPhoto = {
             "http://belintersat.by/images/Telegrambot/happy_summer.jpg",
             "http://belintersat.by/images/Telegrambot/happy_autumn.jpg",
@@ -43,16 +46,13 @@ public class Bot extends TelegramLongPollingBot{
             "http://en.belintersat.by/images/16-jan.jpg",
             "https://belintersat.com/images/gallery/zapusk_foto/belintersat_satellite.jpg"};
 
-    private String[] money = {"А ты их заработал?", "Тебе, да!", "Тебе, нет!", "А ты кто?", "Ты, по-моему, здесь вообще не работаешь."};
-
     private LinkedHashMap<String, ArrayList<String>> linkedHashMap;
+
 
     @Override
     public void onUpdateReceived(Update update){
-        System.out.println(update.getMessage().getFrom().getFirstName() + ": " + update.getMessage().getText());
+       // System.out.println(update.getMessage().getFrom().getFirstName() + ": " + update.getMessage().getText());
         Message message = update.getMessage();
-        //SingletonLog instance = SingletonLog.getInstance();
-        //logger.addHandler(SingletonLog.getHandler());
 
         if ((message != null) && (message.hasText())){
             System.out.println(message.getChatId());
@@ -63,11 +63,9 @@ public class Bot extends TelegramLongPollingBot{
                 e.printStackTrace();
             }
         }
-        //logger.info(message.getText());
     }
 
-
-   // @Override
+    @Override
     public String getBotUsername(){
         return "Sponge Bot";
     }
@@ -76,7 +74,6 @@ public class Bot extends TelegramLongPollingBot{
     public String getBotToken(){
         return "443780992:AAEzMQA70F42iiX3oFjxJ0beFecLo_ialz8";
     }
-
 
     private void sendMsg(Message message) throws IOException {
         if ((message.getText().equalsIgnoreCase("что со спутником")) || (message.getText().equalsIgnoreCase("что со спутником?")) ||
@@ -91,12 +88,8 @@ public class Bot extends TelegramLongPollingBot{
             sendAbonentsList(message);
         }
         else if((message.getText().contains("sent to:") || message.getText().contains("Sent to:"))
-                ||(message.getText().contains("prof to:") || message.getText().contains("Prof to:")
-                )){
+                ||(message.getText().contains("prof to:") || message.getText().contains("Prof to:"))){
             sendBotMsg(message);
-        }
-        else if(message.getText().contains("деньги") || message.getText().contains("Деньги") || message.getText().contains("Денег") || message.getText().contains("денег")){
-           sendMsgMoney(message);
         }
         else if(message.getText().contains("совещание в") || message.getText().contains("Совещание в")){
             sendMsgMeeting(message);
@@ -107,38 +100,13 @@ public class Bot extends TelegramLongPollingBot{
         else if(message.getText().equalsIgnoreCase("/help")) {
             sendMsgHelper(message);
         }
-        else if(message.getText().equalsIgnoreCase("/спутник")) {
-            sendMsgGUS(Calendar.getInstance());
-        }
-        else if(message.getText().equalsIgnoreCase("/цуп")){
+//        else if(message.getText().equalsIgnoreCase("/спутник")) {
+//            sendMsgGUS(Calendar.getInstance());
+//        }
+        else if(message.getText().equalsIgnoreCase("/plan")){
             sendMsgGusFile(message);
         }
-
-//        if(message.getText().contains("АХТУНГ")){
-//            //DeleteMessage deleteMessage = new DeleteMessage();
-//            //deleteMessage.setMessageId(message.getMessageId());
-//            EditMessageText new_message = new EditMessageText();
-//                new_message.setChatId(getCHAT_TEST_ID())
-//                        .setMessageId(message.getMessageId())
-//                        .setText("1234");
-//
-//            try {
-//                editMessageText(new_message);
-//            } catch (TelegramApiException e) {
-//                e.printStackTrace();
-//            }
-//        }
-
-
     }
-
-    public long getCHAT_TEST_ID(){
-        return CHAT_TEST_ID;
-    }
-
-    public long getCHAT_ZAVOD_ID(){ return CHAT_ZAVOD_ID; }
-
-    public long getCHAT_NKU_ID() { return CHAT_NKU_ID;  }
 
 
     private void sendMsgBelintersatList(Message message) {
@@ -169,21 +137,20 @@ public class Bot extends TelegramLongPollingBot{
         HappyBirthdayList happyBirthdayList = Parser.parserBirthday(ClassLoader.getSystemResourceAsStream("xls/ListBirthday.xls"));
         ArrayList<String> list = happyBirthdayList.getUsers();
         String result = "";
-        SendMessage sendMessage = new SendMessage().setChatId(getCHAT_NKU_ID());
+        SendMessage sendMessage = new SendMessage().setChatId(CHAT_NKU_ID);
 
-    
         if (list.size() == 0)
             return;
         for (int i = 0; i < list.size(); i++) {
             if (list.size() == 1) {
                 result = list.get(i) + ". ";
             } else if (list.size() > 1) {
-            if (i < list.size()) {
-                 if (i == list.size() - 1)
-                     result = result + list.get(i) + ". ";
-                else
-                     result = result + list.get(i) + ", ";
-            }
+                if (i < list.size()) {
+                     if (i == list.size() - 1)
+                         result = result + list.get(i) + ". ";
+                    else
+                         result = result + list.get(i) + ", ";
+                }
             }
         }
         sendMessage.setText("  Сегодня День Рождения у " + result + "Поздравляю Вас с Днем Рождения! " +
@@ -191,7 +158,7 @@ public class Bot extends TelegramLongPollingBot{
                 "Пусть удача и успех сопутствуют во всем! " +
                 "Sponge Bot и команда Belintersat");
         SendPhoto sendPhoto = new SendPhoto()
-                                    .setChatId(getCHAT_NKU_ID());
+                                    .setChatId(CHAT_NKU_ID);
 
         if(date.getMonth() == Calendar.JUNE || date.getMonth() == Calendar.JULY || date.getMonth() == Calendar.AUGUST ){
             sendPhoto.setPhoto(urlPhoto[0]);
@@ -207,8 +174,8 @@ public class Bot extends TelegramLongPollingBot{
             sendMessage(sendMessage);
             sendPhoto(sendPhoto);
 
-            sendMessage.setChatId(getCHAT_ZAVOD_ID());
-            sendPhoto.setChatId(getCHAT_ZAVOD_ID());
+            sendMessage.setChatId(CHAT_ZAVOD_ID);
+            sendPhoto.setChatId(CHAT_ZAVOD_ID);
 
             sendMessage(sendMessage);
             sendPhoto(sendPhoto);
@@ -239,9 +206,9 @@ public class Bot extends TelegramLongPollingBot{
             String text = message.getText();
 
             if((text.substring(0, 8).contains("sent to:")) ||(text.substring(0, 8).contains("Sent to:"))){
-                sendMessage.setChatId(getCHAT_NKU_ID());
+                sendMessage.setChatId(CHAT_NKU_ID);
             } else if((text.substring(0, 8).contains("prof to:")) ||(text.substring(0, 8).contains("Prof to:"))){
-                sendMessage.setChatId(getCHAT_ZAVOD_ID());
+                sendMessage.setChatId(CHAT_ZAVOD_ID);
             } else {
                 logger.error("Не верно введена команда Sent to: ");
                 return;}
@@ -259,10 +226,8 @@ public class Bot extends TelegramLongPollingBot{
         }
 
         public void sendMsgChristmas(String text){
-            SendMessage sendMessage = new SendMessage().setChatId(getCHAT_NKU_ID());
-            SendVideo sendVideo = new SendVideo().setChatId(getCHAT_NKU_ID());
-
-
+            SendMessage sendMessage = new SendMessage().setChatId(CHAT_NKU_ID);
+            SendVideo sendVideo = new SendVideo().setChatId(CHAT_NKU_ID);
 
             sendMessage.setText(text);
 
@@ -280,13 +245,11 @@ public class Bot extends TelegramLongPollingBot{
             }
         }
 
-
-
         public void sendMsg23thFebruary(){
 
-            SendMessage sendMessage = new SendMessage().setChatId(getCHAT_NKU_ID());
+            SendMessage sendMessage = new SendMessage().setChatId(CHAT_NKU_ID);
             SendPhoto sendPhoto = new SendPhoto()
-                    .setChatId(getCHAT_NKU_ID());
+                    .setChatId(CHAT_NKU_ID);
             sendPhoto.setPhoto(urlPhoto[5]);
             sendMessage.setText(" С праздником мужества, славы и силы! \nЧествуем вас, дорогие мужчины! \nПусть будет смех и радость в нем," +
                     "\nЧтоб богатырским было здоровье.\n \nЯсного неба, лишь мирных сражений, \nРоста карьерного и достижений.\n" +
@@ -303,10 +266,11 @@ public class Bot extends TelegramLongPollingBot{
                 logger.error("Поздравление на 23-февраля не отправлено " + ex);
             }
         }
+
         public void sendMsg8thMarch(){
-            SendMessage sendMessage = new SendMessage().setChatId(getCHAT_NKU_ID());
+            SendMessage sendMessage = new SendMessage().setChatId(CHAT_NKU_ID);
             SendPhoto sendPhoto = new SendPhoto()
-                    .setChatId(getCHAT_NKU_ID());
+                    .setChatId(CHAT_NKU_ID);
             sendPhoto.setPhoto(urlPhoto[6]);
             sendMessage.setText(" С Международным женским днем! \nПусть будет много счастья в нём, \nИ красоты, сюрпризов ярких," +
                     "\nИ комплиментов самых сладких.\n \nПусть сердце верит, любит, ждет, \nИ счастье в светлый дом придет.\n" +
@@ -323,7 +287,6 @@ public class Bot extends TelegramLongPollingBot{
                 logger.error("Поздравление на 8-марта не отправлено " + ex);
             }
         }
-
 
         private void sendMsgSatellite(Message message){
             SendMessage sendMessage = new SendMessage().setChatId(message.getChatId());
@@ -344,7 +307,7 @@ public class Bot extends TelegramLongPollingBot{
 
         public void sendMsgNotification(){
             if(!isGetTimes()) return;
-            SendMessage sendMessage = new SendMessage().setChatId(getCHAT_NKU_ID());
+            SendMessage sendMessage = new SendMessage().setChatId(CHAT_NKU_ID);
             sendMessage.setText("Господа, у нас сегодня " + getTimes() + " сутки полета! УРА!!!");
 
             try {
@@ -374,29 +337,6 @@ public class Bot extends TelegramLongPollingBot{
                 String ex = Throwables.getStackTraceAsString(e);
                 e.printStackTrace();
                 logger.error("Команда #list не выполнена " + ex);
-            }
-
-        }
-
-        private void sendMsgMoney(Message message) {
-            Date date = new Date();
-            SimpleDateFormat dateFormat = new SimpleDateFormat("dd");
-            Random random = new Random();
-            String str = dateFormat.format(date);
-            if( str.equals("5") || str.equals("6") || str.equals("20") || str.equals("21")){
-                SendMessage sendMessage = new SendMessage().setChatId(message.getChatId());
-                sendMessage.setText(money[random.nextInt(money.length)]);
-
-                try {
-                    sendMessage(sendMessage);
-                    logger.info("Команда Деньги выполнена успешно ");
-                } catch (TelegramApiException e) {
-                    String ex = Throwables.getStackTraceAsString(e);
-                    e.printStackTrace();
-                    logger.error("Команда Деньги не выполнена " + ex);
-                }
-            } else{
-                logger.info("Для команды Деньги были введены неверные данные ");
             }
 
         }
@@ -434,9 +374,9 @@ public class Bot extends TelegramLongPollingBot{
             calendar.add(Calendar.DAY_OF_MONTH, 1);
             String format = simpleDateFormat.format(calendar.getTime());
 
-            linkedHashMap = Parser.readODS(new File("C:\\Users\\KrylovichVI\\Downloads\\Telegram Desktop\\2019_Orbit_Control_Plan.ods"), calendar).getLinkedMap();
-            ArrayList<String> data = linkedHashMap.get(format);
+            linkedHashMap = Parser.readODS(new File(ClassLoader.getSystemResource(pathNameOds).getPath()), calendar).getLinkedMap();
 
+            ArrayList<String> data = linkedHashMap.get(format);
 
             String result = "";
             Boolean[] position = new Boolean[data.size()];
@@ -451,7 +391,7 @@ public class Bot extends TelegramLongPollingBot{
             }
 
             if(count > 2) {
-                SendMessage sendMessage = new SendMessage().setChatId(getCHAT_TEST_ID());
+                SendMessage sendMessage = new SendMessage().setChatId(CHAT_GUS_ID);
 
                 ArrayList<String> text = linkedHashMap.get("Date");
                 for (int i = 0; i < text.size(); i++) {
@@ -462,7 +402,7 @@ public class Bot extends TelegramLongPollingBot{
                         continue;
                     }
                     if(position[i]) {
-                        result += text.get(i) + ": " + (data.get(i).isEmpty() ? "-" : data.get(i)) + "\n";
+                        result += text.get(i) + ": " + (data.get(i).isEmpty() ? "-" : data.get(i)) + (i == 3 ? " UTC" : "") + "\n";
                     }                 }
 
 
@@ -484,7 +424,8 @@ public class Bot extends TelegramLongPollingBot{
             Calendar calendar = Calendar.getInstance();
             String format = simpleDateFormat.format(calendar.getTime());
 
-            SendDocument sendDocument = new SendDocument().setChatId(getCHAT_TEST_ID());
+            SendDocument sendDocument = new SendDocument().setChatId(message.getChatId());
+
 
             File gusFile = getGusFile(calendar, format);
             if(gusFile.isFile()) {
@@ -508,7 +449,7 @@ public class Bot extends TelegramLongPollingBot{
 
     private File getGusFile(Calendar calendar, String format) throws IOException {
         if(linkedHashMap == null)
-            linkedHashMap = Parser.readODS(new File("C:\\Users\\KrylovichVI\\Downloads\\Telegram Desktop\\2019_Orbit_Control_Plan.ods"), calendar).getLinkedMap();
+            linkedHashMap = Parser.readODS(new File(ClassLoader.getSystemResource(pathNameOds).getPath()), calendar).getLinkedMap();
 
         if(linkedHashMap.containsKey(format)) {
 
@@ -528,9 +469,8 @@ public class Bot extends TelegramLongPollingBot{
         return null;
     }
 
-
     public void sendMsgWeather() {
-            SendMessage sendMessage = new SendMessage().setChatId(getCHAT_NKU_ID());
+            SendMessage sendMessage = new SendMessage().setChatId(CHAT_NKU_ID);
             sendMessage.setText(Weather.showWeather());
             try {
                 sendMessage(sendMessage);
@@ -545,9 +485,9 @@ public class Bot extends TelegramLongPollingBot{
         public void sendMsgBelintersat(){
             String str = null;
             int result = getTimes()/365;
-            SendMessage sendMessage = new SendMessage().setChatId(getCHAT_NKU_ID());
+            SendMessage sendMessage = new SendMessage().setChatId(CHAT_NKU_ID);
             SendPhoto sendPhoto = new SendPhoto()
-                    .setChatId(getCHAT_NKU_ID());
+                    .setChatId(CHAT_NKU_ID);
             sendPhoto.setPhoto(urlPhoto[7]);
             if(result < 5 ) {
                 str = " года";
@@ -570,9 +510,9 @@ public class Bot extends TelegramLongPollingBot{
         }
 
         public void sendMsgApril_12() {
-            SendMessage sendMessage = new SendMessage().setChatId(getCHAT_NKU_ID());
+            SendMessage sendMessage = new SendMessage().setChatId(CHAT_NKU_ID);
             SendPhoto sendPhoto = new SendPhoto()
-                    .setChatId(getCHAT_NKU_ID());
+                    .setChatId(CHAT_NKU_ID);
             sendPhoto.setPhoto(urlPhoto[8]);
             sendMessage.setText("12 апреля Всемирный день авиации и космонавтики." +
                     "\nЭтот день является одним из самых  " +

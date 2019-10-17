@@ -3,9 +3,6 @@ package com.belintersat.bot.Domain;
 import javax.persistence.*;
 import java.sql.Date;
 
-/**
- * Created by KrylovichVI on 01.08.2018.
- */
 
 @Entity
 @Table(name = "flags")

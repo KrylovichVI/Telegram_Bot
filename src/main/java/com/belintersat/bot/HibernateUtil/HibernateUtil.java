@@ -3,14 +3,11 @@ package com.belintersat.bot.HibernateUtil;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
-/**
- * Created by KrylovichVI on 01.08.2018.
- */
+
 public class HibernateUtil {
     private static SessionFactory sessionFactory;
-
     private static SessionFactory createSessionFactory(){
-        Configuration configuration = new Configuration().configure();
+        Configuration configuration = new Configuration().configure("hibernate.cfg.xml");
        // StandardServiceRegistry registryBuilder = new StandardServiceRegistryBuilder().applySettings(configuration.getProperties()).build();
 
         SessionFactory sessionFactory = configuration.buildSessionFactory();
