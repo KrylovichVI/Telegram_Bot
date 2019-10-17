@@ -5,7 +5,6 @@ import com.belintersat.bot.ParserXLS.Parser;
 import com.belintersat.bot.Weather.Weather;
 import com.google.common.base.Throwables;
 import org.apache.log4j.Logger;
-import org.jopendocument.dom.spreadsheet.SpreadSheet;
 import org.telegram.telegrambots.api.methods.send.SendDocument;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.methods.send.SendPhoto;
@@ -15,10 +14,11 @@ import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.exceptions.TelegramApiException;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
 import java.util.*;
 
 
@@ -33,7 +33,7 @@ public class Bot extends TelegramLongPollingBot{
     private long CHAT_NKU_ID = -1001489666731L;
     private long CHAT_GUS_ID = -1001074603910L;
 
-    private String pathNameOds = "ods/2019_Orbit_Control_Plan.ods";
+    private final String path = "/mnt/public_folder_share/Orbit_Control_Plan/2019_Orbit_Control_Plan.ods";
 
     private final String[] urlPhoto = {
             "http://belintersat.by/images/Telegrambot/happy_summer.jpg",
@@ -323,6 +323,7 @@ public class Bot extends TelegramLongPollingBot{
         private void sendAbonentsList(Message message){
 
             SendMessage sendMessage = new SendMessage().setChatId(message.getChatId());
+
             HashMap<String, String> belintersatList = Parser.parseSipAbonents(ClassLoader.getSystemResourceAsStream("xls/IPTelephone_Abonents.xls")).getBelintersatMap();
             Set<String> keySet = belintersatList.keySet();
             String result = "";
@@ -374,8 +375,15 @@ public class Bot extends TelegramLongPollingBot{
             calendar.add(Calendar.DAY_OF_MONTH, 1);
             String format = simpleDateFormat.format(calendar.getTime());
 
-            linkedHashMap = Parser.readODS(new File(ClassLoader.getSystemResource(pathNameOds).getPath()), calendar).getLinkedMap();
+            boolean ip = false;
+            try {
+                ip = getIp();
+            } catch (SocketException e) {
+                e.printStackTrace();
+            }
 
+            linkedHashMap = Parser.readODS(new File("/home/root/src/main/resources/files/2019_Orbit_Control_Plan.ods"), calendar).getLinkedMap();
+            //linkedHashMap = Parser.readODS(new File(ClassLoader.getSystemResource("ods/2019_Orbit_Control_Plan.ods").getPath()), calendar).getLinkedMap();
             ArrayList<String> data = linkedHashMap.get(format);
 
             String result = "";
@@ -430,7 +438,6 @@ public class Bot extends TelegramLongPollingBot{
             File gusFile = getGusFile(calendar, format);
             if(gusFile.isFile()) {
                 sendDocument.setNewDocument(gusFile);
-
                 try {
                     sendDocument(sendDocument);
                 } catch (TelegramApiException e) {
@@ -448,8 +455,11 @@ public class Bot extends TelegramLongPollingBot{
         }
 
     private File getGusFile(Calendar calendar, String format) throws IOException {
-        if(linkedHashMap == null)
-            linkedHashMap = Parser.readODS(new File(ClassLoader.getSystemResource(pathNameOds).getPath()), calendar).getLinkedMap();
+        if(linkedHashMap == null) {
+
+          linkedHashMap = Parser.readODS(new File("/home/root/src/main/resources/files/2019_Orbit_Control_Plan.ods"), calendar).getLinkedMap();
+//          linkedHashMap = Parser.readODS(new File(ClassLoader.getSystemResource("ods/2019_Orbit_Control_Plan.ods").getPath()), calendar).getLinkedMap();
+        }
 
         if(linkedHashMap.containsKey(format)) {
 
@@ -467,6 +477,27 @@ public class Bot extends TelegramLongPollingBot{
             return Parser.writeODS(sortedLinkedHashMap);
         }
         return null;
+    }
+
+    private boolean getIp() throws SocketException {
+        String ip;
+        Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
+        while(networkInterfaces.hasMoreElements()){
+            NetworkInterface networkInterface = networkInterfaces.nextElement();
+
+            if(networkInterface.isLoopback() || !networkInterface.isUp())
+                continue;
+
+            Enumeration<InetAddress> inetAddresses = networkInterface.getInetAddresses();
+            while (inetAddresses.hasMoreElements()){
+                InetAddress inetAddress = inetAddresses.nextElement();
+                ip = inetAddress.getHostAddress();
+                if(ip.equals("192.168.210.86")){
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     public void sendMsgWeather() {

@@ -7,12 +7,15 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
+import org.jopendocument.dom.LengthUnit;
 import org.jopendocument.dom.spreadsheet.MutableCell;
 import org.jopendocument.dom.spreadsheet.Sheet;
 import org.jopendocument.dom.spreadsheet.SpreadSheet;
+import org.jopendocument.sample.SpreadSheetViewerDemo1;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.io.File;
@@ -163,6 +166,12 @@ public class Parser {
     }
 
     public static File writeODS(LinkedHashMap<String, ArrayList<String>> map) throws IOException {
+        String path = "./src/main/resources/files/Orbit_Plan.ods";
+        File file = new File(path);
+        if(file.exists() && !file.isDirectory()){
+            file.delete();
+        }
+
         SpreadSheet ooSShet = SpreadSheet.create(1,1,1);
         Sheet firstSheet = ooSShet.getFirstSheet();
         int sizeCol = map.entrySet()
@@ -181,12 +190,16 @@ public class Parser {
         for(String key : keySet){
             ArrayList<String> values = map.get(key);
             for(int cell = 0; cell < values.size(); cell++){
-                firstSheet.setValueAt(values.get(cell), cell, row);
+                if(values.get(cell).contains(":")){
+                    firstSheet.setValueAt(values.get(cell) + " UTC", cell, row);
+                }else{
+                    firstSheet.setValueAt(values.get(cell), cell, row);
+                }
             }
             row ++;
         }
 
-        return ooSShet.saveAs(new File("./src/main/resources/files/Orbit_Plan.ods"));
+        return ooSShet.saveAs(new File(path));
     }
 
 
