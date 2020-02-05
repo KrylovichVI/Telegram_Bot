@@ -14,7 +14,8 @@ import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.exceptions.TelegramApiException;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
@@ -33,7 +34,6 @@ public class Bot extends TelegramLongPollingBot{
     private long CHAT_NKU_ID = -1001489666731L;
     private long CHAT_GUS_ID = -1001074603910L;
 
-    private final String path = "/mnt/public_folder_share/Orbit_Control_Plan/2019_Orbit_Control_Plan.ods";
 
     private final String[] urlPhoto = {
             "http://belintersat.by/images/Telegrambot/happy_summer.jpg",
@@ -100,19 +100,19 @@ public class Bot extends TelegramLongPollingBot{
         else if(message.getText().equalsIgnoreCase("/help")) {
             sendMsgHelper(message);
         }
-//        else if(message.getText().equalsIgnoreCase("/спутник")) {
-//            sendMsgGUS(Calendar.getInstance());
-//        }
         else if(message.getText().equalsIgnoreCase("/plan")){
             sendMsgGusFile(message);
+        }
+
+        else if(message.getText().equalsIgnoreCase("/смена")){
+            sendMsgEmployee(message);
         }
     }
 
 
     private void sendMsgBelintersatList(Message message) {
-        ClassLoader cl = this.getClass().getClassLoader();
-        HashMap<String, String> belintersatMap = Parser.parseAbonentList(ClassLoader.getSystemResourceAsStream("xls/List_Employer.xls")).getBelintersatMap();
-        Set<String> keySet = Parser.parseAbonentList(ClassLoader.getSystemResourceAsStream("xls/List_Employer.xls")).getBelintersatMap().keySet();
+        HashMap<String, String> belintersatMap = Parser.parseAbonentList("/home/root/src/main/resources/files/List_Employer.xls").getBelintersatMap();
+        Set<String> keySet = belintersatMap.keySet();
         SendMessage sendMessage = new SendMessage().setChatId(message.getChatId());
         for (String key : keySet) {
             if (message.getText().equalsIgnoreCase(key)){
@@ -134,7 +134,7 @@ public class Bot extends TelegramLongPollingBot{
     }
   
     public void sendMsgBirthday(Date date){
-        HappyBirthdayList happyBirthdayList = Parser.parserBirthday(ClassLoader.getSystemResourceAsStream("xls/ListBirthday.xls"));
+        HappyBirthdayList happyBirthdayList = Parser.parserBirthday("/home/root/src/main/resources/files/ListBirthday.xls");
         ArrayList<String> list = happyBirthdayList.getUsers();
         String result = "";
         SendMessage sendMessage = new SendMessage().setChatId(CHAT_NKU_ID);
@@ -321,10 +321,9 @@ public class Bot extends TelegramLongPollingBot{
         }
 
         private void sendAbonentsList(Message message){
-
             SendMessage sendMessage = new SendMessage().setChatId(message.getChatId());
 
-            HashMap<String, String> belintersatList = Parser.parseSipAbonents(ClassLoader.getSystemResourceAsStream("xls/IPTelephone_Abonents.xls")).getBelintersatMap();
+            HashMap<String, String> belintersatList = Parser.parseSipAbonents("/home/root/src/main/resources/files/IPTelephone_Abonents.xls").getBelintersatMap();
             Set<String> keySet = belintersatList.keySet();
             String result = "";
             for(String key: keySet){
@@ -375,15 +374,8 @@ public class Bot extends TelegramLongPollingBot{
             calendar.add(Calendar.DAY_OF_MONTH, 1);
             String format = simpleDateFormat.format(calendar.getTime());
 
-            boolean ip = false;
-            try {
-                ip = getIp();
-            } catch (SocketException e) {
-                e.printStackTrace();
-            }
-
-            linkedHashMap = Parser.readODS(new File("/home/root/src/main/resources/files/2019_Orbit_Control_Plan.ods"), calendar).getLinkedMap();
-            //linkedHashMap = Parser.readODS(new File(ClassLoader.getSystemResource("ods/2019_Orbit_Control_Plan.ods").getPath()), calendar).getLinkedMap();
+            linkedHashMap = Parser.readODS(new File("/home/root/src/main/resources/files/2020_Orbit_Control_Plan.ods"), calendar).getLinkedMap();
+            //linkedHashMap = Parser.readODS(new File(ClassLoader.getSystemResource("ods/2020_Orbit_Control_Plan.ods").getPath()), calendar).getLinkedMap();
             ArrayList<String> data = linkedHashMap.get(format);
 
             String result = "";
@@ -457,8 +449,8 @@ public class Bot extends TelegramLongPollingBot{
     private File getGusFile(Calendar calendar, String format) throws IOException {
         if(linkedHashMap == null) {
 
-          linkedHashMap = Parser.readODS(new File("/home/root/src/main/resources/files/2019_Orbit_Control_Plan.ods"), calendar).getLinkedMap();
-//          linkedHashMap = Parser.readODS(new File(ClassLoader.getSystemResource("ods/2019_Orbit_Control_Plan.ods").getPath()), calendar).getLinkedMap();
+          linkedHashMap = Parser.readODS(new File("/home/root/src/main/resources/files/2020_Orbit_Control_Plan.ods"), calendar).getLinkedMap();
+//          linkedHashMap = Parser.readODS(new File(ClassLoader.getSystemResource("ods/2020_Orbit_Control_Plan.ods").getPath()), calendar).getLinkedMap();
         }
 
         if(linkedHashMap.containsKey(format)) {
@@ -477,6 +469,29 @@ public class Bot extends TelegramLongPollingBot{
             return Parser.writeODS(sortedLinkedHashMap);
         }
         return null;
+    }
+
+    public void sendMsgEmployee(Message message) {
+        String date = new SimpleDateFormat("dd.MM.yyyy").format(new Date()) + "\n";
+        String path = "/home/root/src/main/resources/files/Plan_employees.xlsx";
+
+        String result = Parser.changeOfEmployees(path, Calendar.getInstance());
+
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.setText("Смена на " + date +  result);
+        try {
+            if(message.getChatId() != null){
+                sendMessage.setChatId(message.getChatId());
+            } else {
+                sendMessage.setChatId(CHAT_GUS_ID);
+            }
+            sendMessage(sendMessage);
+            logger.info("Команда /cмена выполнена успешно ");
+        } catch (TelegramApiException e) {
+            String ex = Throwables.getStackTraceAsString(e);
+            e.printStackTrace();
+            logger.error("Команда /cмена не выполнена " + ex);
+        }
     }
 
     private boolean getIp() throws SocketException {
@@ -568,7 +583,7 @@ public class Bot extends TelegramLongPollingBot{
 
         public void sendMsgHelper(Message message){
             SendMessage sendMessage = new SendMessage().setChatId(message.getChatId());
-            HashMap<String, String> belintersatList = Parser.parseSipAbonents(ClassLoader.getSystemResourceAsStream("xls/help.xls")).getBelintersatMap();
+            HashMap<String, String> belintersatList = Parser.parseSipAbonents("/home/root/src/main/resources/files/help.xls").getBelintersatMap();
             Set<String> keySet = belintersatList.keySet();
             String result = "";
             for(String key: keySet){

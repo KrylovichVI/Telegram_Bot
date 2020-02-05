@@ -17,7 +17,6 @@ echo 'Restart server...'
 ssh -i ~/.ssh/id_rsa root@192.168.210.86 << EOF
     pgrep java | xargs kill -9
     nohup java -jar /home/root/Telegram_Bot-1.0-jar-with-dependencies.jar > TelegramBotLog.log &
-#    java -jar /home/root/Telegram_Bot-1.0-jar-with-dependencies.jar
 EOF
 
 echo 'Bye...'
